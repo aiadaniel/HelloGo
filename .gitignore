@@ -187,3 +187,7 @@ fabric.properties
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+
+# for go
+go.sum
