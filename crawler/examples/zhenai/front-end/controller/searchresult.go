@@ -2,8 +2,8 @@ package controller
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/front-end/model"
-	"HelloGo/crawler/front-end/view"
+	"HelloGo/crawler/examples/zhenai/front-end/model"
+	"HelloGo/crawler/examples/zhenai/front-end/view"
 	"context"
 	"gopkg.in/olivere/elastic.v5"
 	"net/http"
@@ -19,7 +19,7 @@ type SearchResultHandler struct {
 }
 
 func CreateSearchResultHandler(template string) SearchResultHandler {
-	client, err := elastic.NewClient(elastic.SetSniff(false),elastic.SetURL("http://192.168.128.129:9200"))
+	client, err := elastic.NewClient(elastic.SetSniff(false), elastic.SetURL("http://192.168.128.129:9200"))
 	if err != nil {
 		panic(err)
 	}

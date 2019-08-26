@@ -9,10 +9,10 @@ type Item struct {
 	Url     string
 	Type    string
 	Id      string
-	Payload interface{}
+	Payload interface{} //TODO 这个数据结构不通用
 }
 
-type ParserFunc func(contents []byte,url string) ParseResult
+type ParserFunc func(contents []byte, url string) ParseResult
 type Request struct {
 	Url        string
 	ParserFunc ParserFunc

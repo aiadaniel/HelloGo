@@ -1,7 +1,7 @@
 package main
 
 import (
-	"HelloGo/crawler/front-end/controller"
+	"HelloGo/crawler/examples/zhenai/front-end/controller"
 	"net/http"
 )
 

@@ -11,7 +11,7 @@ import (
 
 var cityListRe = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[0-9a-z]+)"[^>]*>([^<]+)</a>`)
 
-func ParseCityList(bytes []byte,url string) engine.ParseResult {
+func ParseCityList(bytes []byte, url string) engine.ParseResult {
 	//re := regexp.MustCompile(cityListRe)
 	submatchs := cityListRe.FindAllSubmatch(bytes, -1)
 
