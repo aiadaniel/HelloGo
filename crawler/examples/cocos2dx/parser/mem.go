@@ -14,17 +14,18 @@ var memRe = regexp.MustCompile(
 var returnRe = regexp.MustCompile( //返回值
 					`(a-zA-Z0-9 :&;)*(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 :&;*]*)`) //&#160;
 var paramRe = regexp.MustCompile( //参数
-	`(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 ():&;*=]*)`) //&#160;
-func ParseMemitem(content []byte, url string) engine.ParseResult {
+	`(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]*.html[#a-z0-9])">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 ():&;*=]*)`) //&#160;
+func ParseMemitem(content []byte, url string, classname string, packageName string, namespace string) engine.ParseResult {
 	submatch := memRe.FindAllSubmatch(content, -1)
 	memitem := model.Memitem{}
 	memCnt := 0
+	result := engine.ParseResult{}
 	for _, m := range submatch {
 		left := string(m[2])
 		right := string(m[5])
 		memitem.MemitemCenter = string(m[4])
 		//url := string(m[2])
-		//log.Printf("%s",right)
+		log.Printf("%s", right)
 		//对返回值和参数再次解析
 		paramSubmatch := returnRe.FindAllSubmatch([]byte(left), -1)
 		var buffer bytes.Buffer
@@ -51,11 +52,23 @@ func ParseMemitem(content []byte, url string) engine.ParseResult {
 		}
 		memitem.MemitemRight = strings.Replace(buffer.String(), "&amp;", "&", -1)
 		memCnt++
-		log.Printf("==>%02d %s %s %s",
-			memCnt, memitem.MemitemLeft, memitem.MemitemCenter, memitem.MemitemRight)
+		//log.Printf("%s %s	==>%02d %s %s %s", packageName, classname,memCnt, memitem.MemitemLeft, memitem.MemitemCenter, memitem.MemitemRight)
+		log.Printf("return: 		%s-->%s", classname, memitem.MemitemLeft)
+		log.Printf("funcName: 	%s", memitem.MemitemCenter)
+		log.Printf("params: 		%s", memitem.MemitemRight)
+		//memitem.ClassName = classname
+		//memitem.PackageName = packageName
+		//memitem.Namespace = namespace
+		//result.Items = append(result.Items, engine.Item{
+		//		Url: url,
+		//		Payload: memitem,
+		//})
 	}
 
-	result := engine.ParseResult{
+	memitem.ClassName = classname
+	memitem.PackageName = packageName
+	memitem.Namespace = namespace
+	result = engine.ParseResult{
 		Items: []engine.Item{
 			{
 				Url:     url,

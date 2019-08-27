@@ -15,7 +15,7 @@ var (
 	cityRe = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[^"]+)`)
 )
 
-func ParseCity(bytes []byte, url string) engine.ParseResult {
+func ParseCity(bytes []byte, url2 string) engine.ParseResult {
 	submatchs := pRe.FindAllSubmatch(bytes, -1)
 
 	result := engine.ParseResult{}
