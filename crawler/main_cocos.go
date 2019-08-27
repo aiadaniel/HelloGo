@@ -9,6 +9,8 @@ import (
 
 const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d7/df3/classcocos2d_1_1_director.html"
 
+//const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d4/d5f/classcocos2d_1_1_scene.html"
+
 func main() {
 	//en := engine.SimpleEngine{}
 	//太快的请求触发爬虫网站的防御机制，导致403
