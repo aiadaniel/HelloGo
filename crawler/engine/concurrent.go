@@ -44,6 +44,9 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 			var tempItem = item //NOTE!: 这里需要一个临时变量，解决go闭包传参问题（变量有效期、逃逸等问题）
 			go func() { e.ItemChan <- tempItem }()
 		}
+
+		//增加方法告知爬虫结束
+
 		for _, r := range result.Requests {
 			if isDuplicate(r.Url) {
 				log.Printf("==error duplicate url: %s", r.Url)
