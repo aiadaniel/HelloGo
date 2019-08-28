@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var rateLimiter = time.Tick(10 * time.Millisecond)
+var rateLimiter = time.Tick(50 * time.Millisecond)
 
 func Worker(r Request) (ParseResult, error) {
 	<-rateLimiter
@@ -16,6 +16,7 @@ func Worker(r Request) (ParseResult, error) {
 		fmt.Printf("err fetching:%s %v\n", r.Url, err)
 		return ParseResult{}, nil
 	}
+	//log.Printf("%d %s", len(contents),string(contents[5500:6000]))
 
 	return r.ParserFunc(contents, r.Url), nil
 }

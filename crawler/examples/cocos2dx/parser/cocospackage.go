@@ -2,6 +2,7 @@ package parser
 
 import (
 	"HelloGo/crawler/engine"
+	"log"
 	"regexp"
 	"strings"
 )
@@ -16,6 +17,7 @@ var namespaceRe = regexp.MustCompile(
 var classesRe = regexp.MustCompile(
 	`<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">([a-zA-Z]+) &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html)">([a-zA-Z0-9]+)</a></td></tr>`)
 
+// 模块主页，内部包含类列表
 func ParseCocosPackage(content []byte, url1 string) engine.ParseResult {
 	submatch := packageNameRe.FindAllSubmatch(content, -1)
 	var packageName, namespaceName string
@@ -27,6 +29,7 @@ func ParseCocosPackage(content []byte, url1 string) engine.ParseResult {
 	for _, m := range allSubmatch {
 		namespaceName = string(m[1])
 	}
+	log.Printf("=====package:%s namespace:%s", packageName, namespaceName)
 
 	result := engine.ParseResult{}
 	classes := classesRe.FindAllSubmatch(content, -1)
@@ -35,13 +38,13 @@ func ParseCocosPackage(content []byte, url1 string) engine.ParseResult {
 		if strings.Compare(classorstruct, "struct") == 0 {
 			continue
 		}
-		className := string(m[3])
+		var className = string(m[3])
 		//log.Printf("==class: %s %s",className,string(m[2]))
-		url := baseurl + string(m[2])
+		var url = baseurl + string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
 			Url: url,
 			ParserFunc: func(c []byte, url2 string) engine.ParseResult {
-				return ParseMemitem(c, url, className, packageName, namespaceName)
+				return ParseMemitem(c, url, packageName, className, namespaceName)
 			},
 		})
 		//log.Printf("=====%s %s %s",packageName,namespaceName,moduleName)

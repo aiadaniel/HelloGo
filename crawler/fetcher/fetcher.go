@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func Fetch(url string) ([]byte,error){
+func Fetch(url string) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -35,7 +35,7 @@ func Fetch(url string) ([]byte,error){
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("err status code ", resp.StatusCode)
-		return nil,fmt.Errorf("err status code %d",resp.StatusCode)
+		return nil, fmt.Errorf("err status code %d", resp.StatusCode)
 	}
 
 	//这里可能出现中文乱码，放到其他语言类似，需要做自动编码检测
@@ -47,7 +47,7 @@ func Fetch(url string) ([]byte,error){
 	if err != nil {
 		panic(err)
 	}
-	return contents,nil
+	return contents, nil
 }
 
 func determineEncoding(r *bufio.Reader) encoding.Encoding {

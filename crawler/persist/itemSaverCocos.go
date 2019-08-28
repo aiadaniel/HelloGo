@@ -17,7 +17,7 @@ func ItemSaverCocos(index string) (chan engine.Item, error) {
 			//_ = <-out
 			item := <-out
 			var memFunc = item.Payload.(model.Memitem)
-			log.Printf("ItemSaver got:%d, %s", itemCnt, memFunc.ClassName+"->"+memFunc.MemitemCenter)
+			log.Printf("ItemSaver got:%d, %s", itemCnt, memFunc)
 			itemCnt++
 		}
 	}()
