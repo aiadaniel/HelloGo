@@ -37,10 +37,10 @@ const methodArgs = `PyObject* Py{XXX}_{MMM}(Py{XXX} *self{AAA})
 `
 
 //替换模块定义MMM
-const module = `PyMethodDef Py{XXX}_methods[] = {
-    {"setDisplayStats",(PyCFunction)Py{XXX}_setDisplayStats,METH_VARARGS,""},
-    {"holder",(PyCFunction)Py{XXX}_holder,METH_NOARGS,""},
-    {NULL,NULL,0,NULL}
+const moduleStart = `PyMethodDef Py{XXX}_methods[] = {`
+const moduleArgs = `	{"{MMM}",(PyCFunction)Py{XXX}_{MMM},METH_VARARGS,""},`
+const moduleNoArg = `	{"{MMM}",(PyCFunction)Py{XXX}_{MMM},METH_NOARGS,""},`
+const moduleEnd = `	{NULL,NULL,0,NULL}
 };`
 
 var classes map[string][]model.Memitem //key 包名+类名  value 函数列表
@@ -90,25 +90,33 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 		var hreplace, cppreplace string
 
 		var buf bytes.Buffer
+		var modBuf bytes.Buffer
+		modBuf.WriteString(moduleStart)
+		modBuf.WriteString("\n")
 		for _, memFunc := range members {
-			//i: 判断参数个数
+			//i: 判断返回值
+
+			//ii: 判断参数个数
+			funcName := strings.Trim(memFunc.MemitemCenter, " ")
 			params := strings.Split(strings.Trim(memFunc.MemitemRight, " "), ",")
-			method := strings.Replace(methodArgs, "{MMM}", strings.Trim(memFunc.MemitemCenter, " "), -1)
+			method := strings.Replace(methodArgs, "{MMM}", funcName, -1)
 
-			if params == nil || len(params) == 1 { //实际是无参
-				if params[0] == "const" || params[0] == "void" || params[0] == "" {
-					method = strings.Replace(method, "{AAA}", "", -1)
-				}
+			if params == nil || params[0] == "const" || params[0] == "void" || params[0] == "" ||
+				params[0] == "() const" || params[0] == "() const override" { //无参
+				buf.WriteString(strings.Replace(method, "{AAA}", "", -1))
+				modBuf.WriteString(strings.Replace(moduleNoArg, "{MMM}", funcName, -1))
+				modBuf.WriteString("\n")
 			} else {
-				method = strings.Replace(method, "{AAA}", ",PyObject *args", -1)
+				buf.WriteString(strings.Replace(method, "{AAA}", ",PyObject *args", -1))
+				modBuf.WriteString(strings.Replace(moduleArgs, "{MMM}", funcName, -1))
+				modBuf.WriteString("\n")
 			}
-			//
-			buf.WriteString(method)
-
-			//TODO 模块的替换
 		}
+		modBuf.WriteString(moduleEnd)
 		hreplace = strings.Replace(h, "{XXX}", temp[1], -1)
 		cppreplace = strings.Replace(cpp, "{YYY}", buf.String(), -1)
+		cppreplace = strings.Replace(cppreplace, "{ZZZ}", modBuf.String(), -1)
+
 		cppreplace = strings.Replace(cppreplace, "{XXX}", temp[1], -1)
 		//3. 写文件
 		CreateFile(dirname, hfilename, hreplace)
