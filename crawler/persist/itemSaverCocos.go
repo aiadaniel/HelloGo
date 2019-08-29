@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -23,7 +24,8 @@ const cppFile = "py_XXX.cpptemplate"
 const seperator = string(os.PathSeparator)
 
 //替换常规方法YYY 底部加一空行
-const methodArgs = `PyObject* Py{XXX}_{MMM}(Py{XXX} *self{AAA})
+const methodArgs = `// {LLL} {MMM}{RRR}
+PyObject* Py{XXX}_{MMM}(Py{XXX} *self{AAA})
 {
     // @see py_Common.h
     // parse args here
@@ -47,8 +49,11 @@ var classes map[string][]model.Memitem //key 包名+类名  value 函数列表
 
 func ItemSaverCocos(index string) (chan engine.Item, error) {
 	includeprefix, _ := filepath.Abs(filepath.Dir(includeFile))
-	h := ReadTemplate(includeFile)
-	cpp := ReadTemplate(cppFile)
+	basepath := includeprefix + seperator + "crawler" + seperator + "persist" + seperator //TODO 优化工作目录问题
+	s, _ := filepath.Abs(basepath + includeFile)
+	ss, _ := filepath.Abs(basepath + seperator + cppFile)
+	h := ReadTemplate(s)
+	cpp := ReadTemplate(ss)
 	classes = make(map[string][]model.Memitem)
 	out := make(chan engine.Item)
 	go func() {
@@ -74,7 +79,16 @@ func ItemSaverCocos(index string) (chan engine.Item, error) {
 	return out, nil
 }
 
-// 生成h/cpp文件
+//这个实测是C盘下AppData内的exe所在目录
+func GetCurrentPath() (string, error) {
+	path, e := exec.LookPath(os.Args[0])
+	if e != nil {
+		return "", e
+	}
+	return filepath.Abs(path)
+}
+
+// 生成h/cpp文件  注意：运行时目录有所改变，不同于单元测试目录，在main层级即当前工作目录
 func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h string, cpp string) {
 	for k, v := range classes {
 		var temp = strings.Split(k, ",")
@@ -98,8 +112,15 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 
 			//ii: 判断参数个数
 			funcName := strings.Trim(memFunc.MemitemCenter, " ")
-			params := strings.Split(strings.Trim(memFunc.MemitemRight, " "), ",")
+			paramsTrim := strings.Trim(memFunc.MemitemRight, " ")
+			returnTrim := strings.Trim(memFunc.MemitemLeft, " ")
+			params := strings.Split(paramsTrim, ",")
 			method := strings.Replace(methodArgs, "{MMM}", funcName, -1)
+			method = strings.Replace(method, "{LLL}", returnTrim, -1)
+			if paramsTrim != "() const" && paramsTrim != "() const override" {
+				paramsTrim = "(" + paramsTrim + ")"
+			}
+			method = strings.Replace(method, "{RRR}", paramsTrim, -1)
 
 			if params == nil || params[0] == "const" || params[0] == "void" || params[0] == "" ||
 				params[0] == "() const" || params[0] == "() const override" { //无参
@@ -126,18 +147,18 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 
 //读取模板
 func ReadTemplate(name string) string {
-	dir, err := filepath.Abs(name) //filepath.Dir
-	if err != nil {
-		log.Printf("error dir file %s ,%v", dir, err)
-		return "err"
-	}
-	file, err := os.OpenFile(dir, os.O_RDONLY, 0666)
+	//dir, err := filepath.Abs(name) //filepath.Dir
+	//if err != nil {
+	//	log.Printf("error dir file %s ,%v", dir, err)
+	//	return "err"
+	//}
+	file, err := os.OpenFile(name, os.O_RDONLY, 0666)
 	defer file.Close()
 	if err != nil {
 		if os.IsPermission(err) {
 			log.Printf("error no permission")
 		} else {
-			log.Printf("error open file %v ,%v", file, err)
+			log.Printf("error open file %v", err)
 		}
 		return "err"
 	}
@@ -156,7 +177,7 @@ func ReadTemplate(name string) string {
 			if err == io.EOF {
 				break
 			}
-			log.Printf("error read file %s ,%v", dir, err)
+			log.Printf("error read file %s ,%v", name, err)
 		}
 		//log.Printf(" buf = %s\n", string(buf))
 		buffer.Write(buf)

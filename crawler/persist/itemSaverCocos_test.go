@@ -59,9 +59,24 @@ func TestGenerateFile(t *testing.T) {
 	classes[k] = append(classes[k], item2)
 
 	includeprefix, _ := filepath.Abs(filepath.Dir(includeFile))
-	h := ReadTemplate(includeFile)
-	cpp := ReadTemplate(cppFile)
+	s, _ := filepath.Abs(includeFile)
+	ss, _ := filepath.Abs(cppFile)
+	h := ReadTemplate(s)
+	cpp := ReadTemplate(ss)
 
 	GenerateFile(classes, includeprefix, h, cpp)
 
+}
+
+func TestGetCurrentPath(t *testing.T) {
+	log.Printf("%s", filepath.Dir(includeFile)) //实测返回 .即当前目录
+	pp, _ := filepath.Abs(filepath.Dir(includeFile))
+	log.Printf("%s", pp)
+	dir, _ := os.Getwd()
+	log.Printf("%s", dir)
+	s, e := GetCurrentPath()
+	if e != nil {
+		panic("eeee")
+	}
+	log.Printf("%s", s)
 }
