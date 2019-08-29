@@ -24,7 +24,7 @@ const cppFile = "py_XXX.cpptemplate"
 const seperator = string(os.PathSeparator)
 
 //替换常规方法YYY 底部加一空行
-const methodArgs = `// {LLL} {MMM}{RRR}
+const methodArgs = `//// {LLL} {MMM}{RRR}
 PyObject* Py{XXX}_{MMM}(Py{XXX} *self{AAA})
 {
     // @see py_Common.h
@@ -65,12 +65,12 @@ func ItemSaverCocos(index string) (chan engine.Item, error) {
 				var memFunc = item.Payload.(model.Memitem)
 				log.Printf("ItemSaver got:%d, %s", itemCnt, memFunc)
 				k := memFunc.PackageName + "," + memFunc.ClassName
-				classes[k] = append(classes[memFunc.ClassName], memFunc)
+				classes[k] = append(classes[k], memFunc)
 
 				itemCnt++
 			case <-time.After(15 * time.Second): //目前先简单n秒超时(TODO 增加爬虫结束通知)
 				GenerateFile(classes, includeprefix, h, cpp)
-				//log.Printf("final get %d", len(classes))
+				log.Printf("final get %d", len(classes))
 				break Loop
 			}
 
