@@ -21,7 +21,7 @@ func main() {
 		Scheduler: &scheduler.QueueScheduler{},
 		ItemChan:  itemChan,
 	}
-	en.Run(engine.Request{
+	en.Run(false, engine.Request{
 		Url:        urlzhenai,
 		ParserFunc: parser.ParseCityList,
 	})
