@@ -4,6 +4,7 @@ import (
 	"HelloGo/crawler/engine"
 	"HelloGo/crawler/examples/cocos2dx/model"
 	"bytes"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -22,9 +23,28 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 	//if len(submatch) == 0 {
 	//	panic("may be something err on url")
 	//}
+	var members []string
 	for _, m := range submatch {
 		memitem := model.Memitem{}
 		memitem.MemitemCenter = string(m[4])
+		//构造、析构、重载函数冲突处理
+		if memitem.MemitemCenter == classname || memitem.MemitemCenter == "~"+classname {
+			continue
+		}
+		if strings.Contains(memitem.MemitemCenter, "~") {
+			continue
+		}
+		idx := 0
+		for _, m := range members {
+			if strings.Contains(m, memitem.MemitemCenter) {
+				idx++
+			}
+		}
+		if idx > 0 { //同名函数加_序号
+			memitem.MemitemCenter = fmt.Sprintf("%s_%d", memitem.MemitemCenter, idx)
+		}
+		members = append(members, memitem.MemitemCenter)
+
 		//url := string(m[2])
 		//log.Printf("%s", right)
 		//对返回值和参数再次解析

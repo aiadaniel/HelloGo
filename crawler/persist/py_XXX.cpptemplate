@@ -1,5 +1,7 @@
 
-#include "py_CC{XXX}.h"
+#include "py_{XXX}.h"
+//cocos头文件
+#include "{BBB}"
 
 namespace py_cocos2d
 {

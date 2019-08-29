@@ -93,8 +93,19 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 	for k, v := range classes {
 		var temp = strings.Split(k, ",")
 		members := v
+		packageName := temp[0]
+		if packageName == "2D Nodes" {
+			packageName = "2d"
+		}
+		if packageName == "3D Nodes" {
+			packageName = "3d"
+		}
+		if packageName == "UI Nodes" {
+			packageName = "ui"
+		}
+		packageName = strings.ToLower(packageName)
 		//1. 根据包名、类名创建文件
-		dirname := includeprefix + seperator + "out" + seperator + strings.TrimSpace(temp[0]) + seperator
+		dirname := includeprefix + seperator + "out" + seperator + strings.TrimSpace(packageName) + seperator
 		hfilename := dirname + fmt.Sprintf("py_%s.h", temp[1])
 		CreateFile(dirname, hfilename, "")
 		cppfilename := dirname + fmt.Sprintf("py_%s.cpp", temp[1])
@@ -109,7 +120,6 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 		modBuf.WriteString("\n")
 		for _, memFunc := range members {
 			//i: 判断返回值
-
 			//ii: 判断参数个数
 			funcName := strings.Trim(memFunc.MemitemCenter, " ")
 			paramsTrim := strings.Trim(memFunc.MemitemRight, " ")
@@ -135,7 +145,9 @@ func GenerateFile(classes map[string][]model.Memitem, includeprefix string, h st
 		}
 		modBuf.WriteString(moduleEnd)
 		hreplace = strings.Replace(h, "{XXX}", temp[1], -1)
-		cppreplace = strings.Replace(cpp, "{YYY}", buf.String(), -1)
+
+		cppreplace = strings.Replace(cpp, "{BBB}", packageName+"/CC"+temp[1]+".h", -1)
+		cppreplace = strings.Replace(cppreplace, "{YYY}", buf.String(), -1)
 		cppreplace = strings.Replace(cppreplace, "{ZZZ}", modBuf.String(), -1)
 
 		cppreplace = strings.Replace(cppreplace, "{XXX}", temp[1], -1)
@@ -186,11 +198,11 @@ func ReadTemplate(name string) string {
 }
 
 //根据包名、类名从模板（.h/.cpp）创建文件
-func CreateFile(packname string, classname string, content string) {
+func CreateFile(packageName string, classname string, content string) {
 
-	b, _ := myutils.PathExists(packname)
+	b, _ := myutils.PathExists(packageName)
 	if !b {
-		err := os.MkdirAll(packname, os.ModePerm) //递归创建  Mkdir普通创建
+		err := os.MkdirAll(packageName, os.ModePerm) //递归创建  Mkdir普通创建
 		if err != nil {
 			log.Printf("error create dir %v", err)
 			return
