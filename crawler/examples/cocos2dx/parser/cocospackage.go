@@ -35,11 +35,13 @@ func ParseCocosPackage(content []byte, url1 string) engine.ParseResult {
 	classes := classesRe.FindAllSubmatch(content, -1)
 	for _, m := range classes {
 		classorstruct := string(m[1])
-		if strings.Compare(classorstruct, "struct") == 0 {
+		if strings.Compare(classorstruct, "struct") == 0 ||
+			strings.Compare(classorstruct, "Clonable") == 0 {
 			continue
 		}
+
 		var className = string(m[3])
-		//log.Printf("==class: %s %s",className,string(m[2]))
+		log.Printf("==class: %s %s", className, string(m[2]))
 		var url = baseurl + string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
 			Url: url,

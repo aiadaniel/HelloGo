@@ -8,10 +8,16 @@ import (
 
 var rateLimiter = time.Tick(50 * time.Millisecond)
 
-func Worker(r Request) (ParseResult, error) {
+func Worker(r Request, isLocal bool) (ParseResult, error) {
 	<-rateLimiter
 	//fmt.Printf("Fetching %s\n",r.Url)
-	contents, err := fetcher.Fetch(r.Url)
+	var contents []byte
+	var err error
+	if isLocal {
+		contents, err = fetcher.FetchLocal(r.Url)
+	} else {
+		contents, err = fetcher.Fetch(r.Url)
+	}
 	if err != nil {
 		fmt.Printf("err fetching:%s %v\n", r.Url, err)
 		return ParseResult{}, nil

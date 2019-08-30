@@ -19,13 +19,14 @@ type ConcurrentEngine struct {
 	ItemChan  chan Item
 }
 
-func (e *ConcurrentEngine) Run(seeds ...Request) {
+//isLocal 表示本地爬虫，文件夹
+func (e *ConcurrentEngine) Run(isLocal bool, seeds ...Request) {
 
 	out := make(chan ParseResult)
 	e.Scheduler.Loop()
 
 	for i := 0; i < e.WorkerCnt; i++ {
-		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
+		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler, isLocal)
 	}
 
 	for _, r := range seeds {
@@ -53,13 +54,13 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 				continue
 			}
 			//var tempR = r
-			//log.Printf("==r.Url: %s",r.Url)
+			log.Printf("==r.Url: %s", r.Url)
 			e.Scheduler.Submit(r)
 		}
 	}
 }
 
-func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
+func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier, isLocal bool) {
 	go func() {
 		//in := make(chan Request)
 		for {
@@ -67,7 +68,7 @@ func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 			ready.WorkerReady(in)
 
 			r := <-in
-			result, err := Worker(r)
+			result, err := Worker(r, isLocal)
 			if err != nil {
 				continue
 			}

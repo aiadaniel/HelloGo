@@ -63,10 +63,10 @@ func ItemSaverCocos(index string) (chan engine.Item, error) {
 			select {
 			case item := <-out:
 				var memFunc = item.Payload.(model.Memitem)
-				log.Printf("ItemSaver got:%d, %s", itemCnt, memFunc)
+				log.Printf("%d, %s", itemCnt, memFunc)
 				k := memFunc.PackageName + "," + memFunc.ClassName
 				classes[k] = append(classes[k], memFunc)
-
+				//log.Printf("%s  %s",k,memFunc.MemitemCenter)
 				itemCnt++
 			case <-time.After(15 * time.Second): //目前先简单n秒超时(TODO 增加爬虫结束通知)
 				GenerateFile(classes, includeprefix, h, cpp)

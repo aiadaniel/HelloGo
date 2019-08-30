@@ -23,10 +23,11 @@ func main() {
 		panic(err)
 	}
 	en := engine.ConcurrentEngine{
-		WorkerCnt: 50,
+		WorkerCnt: 10,
 		Scheduler: &scheduler.QueueScheduler{},
 		ItemChan:  itemChan,
 	}
+
 	en.Run(true, engine.Request{
 		Url:        urllocal,
 		ParserFunc: parser.ParseCocosPackageLocal,

@@ -1,32 +1,69 @@
 package parser
 
-import "testing"
+import (
+	"bytes"
+	"log"
+	"regexp"
+	"strings"
+	"testing"
+)
+
+var memRe2 = regexp.MustCompile(
+	`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">(<a class="anchor" id="[a-z0-9]+"></a>[\s]+)*([\S _]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9]+.html)#[a-z0-9]+">([\S]+)</a>([\S _]+)</td></tr>`)
+var content1 = `<tr  name="cpp" class="memitem:a0234c1f2c02129634151a60625c8d13e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d3/d35/classcocos2d_1_1_sprite_frame.html">SpriteFrame</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#a0234c1f2c02129634151a60625c8d13e">getSpriteFrame</a> () const </td></tr>
+<tr name="cpp"  class="memdesc:a0234c1f2c02129634151a60625c8d13e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a SpriteFrameName to be used.  <a href="#a0234c1f2c02129634151a60625c8d13e">More...</a><br /></td></tr>
+<tr name = "cpp" class="separator:a0234c1f2c02129634151a60625c8d13e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="cpp" class="memitem:acab7cd7323521a7d6a92de55e4a57bca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#acab7cd7323521a7d6a92de55e4a57bca">setSpriteFrame</a> (<a class="el" href="../../d3/d35/classcocos2d_1_1_sprite_frame.html">SpriteFrame</a> *frame)</td></tr>
+<tr name="cpp"  class="memdesc:acab7cd7323521a7d6a92de55e4a57bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="../../d3/d35/classcocos2d_1_1_sprite_frame.html" title="A SpriteFrame has: ">SpriteFrame</a>.  <a href="#acab7cd7323521a7d6a92de55e4a57bca">More...</a><br /></td></tr>
+<tr name = "cpp" class="separator:acab7cd7323521a7d6a92de55e4a57bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="js" class="memitem:acab7cd7323521a7d6a92de55e4a57bca"><td class="memItemLeft" align="right" valign="top">var&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#acab7cd7323521a7d6a92de55e4a57bca">setSpriteFrame</a> ( var frame)</td></tr>
+<tr name="js"  class="memdesc:acab7cd7323521a7d6a92de55e4a57bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="../../d3/d35/classcocos2d_1_1_sprite_frame.html" title="A SpriteFrame has: ">SpriteFrame</a>.  <a href="#acab7cd7323521a7d6a92de55e4a57bca">More...</a><br /></td></tr>
+<tr name = "js" class="separator:acab7cd7323521a7d6a92de55e4a57bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="lua" class="memitem:acab7cd7323521a7d6a92de55e4a57bca"><td class="memItemLeft" align="right" valign="top">local&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#acab7cd7323521a7d6a92de55e4a57bca">setSpriteFrame</a> ( local frame)</td></tr>
+<tr name="lua"  class="memdesc:acab7cd7323521a7d6a92de55e4a57bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="../../d3/d35/classcocos2d_1_1_sprite_frame.html" title="A SpriteFrame has: ">SpriteFrame</a>.  <a href="#acab7cd7323521a7d6a92de55e4a57bca">More...</a><br /></td></tr>
+<tr name="lua" class="separator:acab7cd7323521a7d6a92de55e4a57bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="cpp" class="memitem:a46ec4ad1fef24093354d2509d578ef5c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#a46ec4ad1fef24093354d2509d578ef5c">getDelayUnits</a> () const </td></tr>
+<tr name="cpp"  class="memdesc:a46ec4ad1fef24093354d2509d578ef5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the units of time the frame takes.  <a href="#a46ec4ad1fef24093354d2509d578ef5c">More...</a><br /></td></tr>
+<tr name = "cpp" class="separator:a46ec4ad1fef24093354d2509d578ef5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="js" class="memitem:a46ec4ad1fef24093354d2509d578ef5c"><td class="memItemLeft" align="right" valign="top">var&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#a46ec4ad1fef24093354d2509d578ef5c">getDelayUnits</a> ()</td></tr>
+<tr name="js"  class="memdesc:a46ec4ad1fef24093354d2509d578ef5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the units of time the frame takes.  <a href="#a46ec4ad1fef24093354d2509d578ef5c">More...</a><br /></td></tr>
+<tr name = "js" class="separator:a46ec4ad1fef24093354d2509d578ef5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr  name="lua" class="memitem:a46ec4ad1fef24093354d2509d578ef5c"><td class="memItemLeft" align="right" valign="top">local&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d7d/classcocos2d_1_1_animation_frame.html#a46ec4ad1fef24093354d2509d578ef5c">getDelayUnits</a> ()</td></tr>
+<tr name="lua"  class="memdesc:a46ec4ad1fef24093354d2509d578ef5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the units of time the frame takes.  <a href="#a46ec4ad1fef24093354d2509d578ef5c">More...</a><br /></td></tr>
+<tr name="lua" class="separator:a46ec4ad1fef24093354d2509d578ef5c"><td class="memSeparator" colspan="2">&#160;</td></tr>`
 
 func TestParseMemitem(t *testing.T) {
-	const content = `<tr  name="cpp" class="memitem:ac83ef78efb9d88c6b9217c1ccf7e4cac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d0c/classcocos2d_1_1_vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#ac83ef78efb9d88c6b9217c1ccf7e4cac">vertex</a> (const <a class="el" href="../../d1/d9c/classcocos2d_1_1_vec2.html">Vec2</a> &amp;pos) const </td></tr>
-	<tr  name="js" class="memitem:ac83ef78efb9d88c6b9217c1ccf7e4cac"><td class="memItemLeft" align="right" valign="top">var&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#ac83ef78efb9d88c6b9217c1ccf7e4cac">vertex</a> ( var pos)</td></tr>
-	<tr  name="cpp" class="memitem:a6689779177452cdadf408d57cdeae9a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6689779177452cdadf408d57cdeae9a8"></a>
-	<a class="el" href="../../d2/d0c/classcocos2d_1_1_vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a6689779177452cdadf408d57cdeae9a8">getOriginalVertex</a> (const <a class="el" href="../../d1/d9c/classcocos2d_1_1_vec2.html">Vec2</a> &amp;pos) const </td></tr>
-	<tr name="cpp"  class="memdesc:a6689779177452cdadf408d57cdeae9a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the original (non-transformed) vertex at a given position. <br /></td></tr>
-	<tr name = "cpp" class="separator:a6689779177452cdadf408d57cdeae9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-	<tr  name="cpp" class="memitem:a60247649d9c66382b6c3136d961f6c75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d0c/classcocos2d_1_1_vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a60247649d9c66382b6c3136d961f6c75">originalVertex</a> (const <a class="el" href="../../d1/d9c/classcocos2d_1_1_vec2.html">Vec2</a> &amp;pos) const </td></tr>
-	<tr  name="cpp" class="memitem:a0175824c0a8a7484c25fdc4487ddff99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0175824c0a8a7484c25fdc4487ddff99"></a>
-		void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a0175824c0a8a7484c25fdc4487ddff99">setVertex</a> (const <a class="el" href="../../d1/d9c/classcocos2d_1_1_vec2.html">Vec2</a> &amp;pos, const <a class="el" href="../../d2/d0c/classcocos2d_1_1_vec3.html">Vec3</a> &amp;<a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#ac83ef78efb9d88c6b9217c1ccf7e4cac">vertex</a>)</td></tr>
-	<tr name="cpp"  class="memdesc:a0175824c0a8a7484c25fdc4487ddff99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a new vertex at a given position. <br /></td></tr>
-	<tr name = "cpp" class="separator:a0175824c0a8a7484c25fdc4487ddff99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-	<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
-	<tr  name="cpp" class="memitem:a78acafe1de2c03799c530d083a3cac4f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a78acafe1de2c03799c530d083a3cac4f">beforeBlit</a> () override</td></tr>
-	<tr  name="js" class="memitem:a78acafe1de2c03799c530d083a3cac4f"><td class="memItemLeft" align="right" valign="top">var&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a78acafe1de2c03799c530d083a3cac4f">beforeBlit</a> ()</td></tr>
-	<tr  name="lua" class="memitem:a78acafe1de2c03799c530d083a3cac4f"><td class="memItemLeft" align="right" valign="top">local&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a78acafe1de2c03799c530d083a3cac4f">beforeBlit</a> ()</td></tr>
-	<tr  name="cpp" class="memitem:aec55b077a80c8321729f42a6cda622e3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#aec55b077a80c8321729f42a6cda622e3">blit</a> () override</td></tr>
-	<tr name="cpp"  class="memdesc:aec55b077a80c8321729f42a6cda622e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface used to blit the texture with grid to screen.  <a href="#aec55b077a80c8321729f42a6cda622e3">More...</a><br /></td></tr>
-	<tr name = "cpp" class="separator:aec55b077a80c8321729f42a6cda622e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-	<tr  name="lua" class="memitem:aec55b077a80c8321729f42a6cda622e3"><td class="memItemLeft" align="right" valign="top">local&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#aec55b077a80c8321729f42a6cda622e3">blit</a> ()</td></tr>
-	<tr name="lua"  class="memdesc:aec55b077a80c8321729f42a6cda622e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface used to blit the texture with grid to screen.  <a href="#aec55b077a80c8321729f42a6cda622e3">More...</a><br /></td></tr>
-	<tr name="lua" class="separator:aec55b077a80c8321729f42a6cda622e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-	<tr  name="cpp" class="memitem:a912cd1d7f037753dfe2c50121d7d9eb8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/d59/classcocos2d_1_1_grid3_d.html#a912cd1d7f037753dfe2c50121d7d9eb8">reuse</a> () override</td></tr>
-	<tr name="cpp"  class="memdesc:a912cd1d7f037753dfe2c50121d7d9eb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface, Reuse the grid vertices.  <a href="#a912cd1d7f037753dfe2c50121d7d9eb8">More...</a><br /></td></tr>
-	<tr name = "cpp" class="separator:a912cd1d7f037753dfe2c50121d7d9eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>`
+	submatch := memRe2.FindAllSubmatch([]byte(content1), -1)
 
-	ParseMemitem([]byte(content), "")
+	for _, m := range submatch {
+		log.Printf("%s", m[2])
+		log.Printf("%s", m[4])
+		log.Printf("%s", m[5])
+
+		returnSubmatch := returnRe.FindAllSubmatch(m[2], -1)
+		var buffer bytes.Buffer
+		for _, n := range returnSubmatch {
+			//url := string(n[1])
+			buffer.Write(n[1]) //返回值前缀如const等
+			buffer.Write(n[4]) //返回值名
+			buffer.Write(n[5]) //返回值后缀如* &等
+		}
+		log.Printf("\t--%s", buffer.String())
+
+		buffer.Reset()
+		items := strings.Split(string(m[5]), ",")
+		for idx, item := range items {
+			if idx != 0 {
+				buffer.Write([]byte(","))
+			}
+			paramSubmatch := paramRe.FindAllSubmatch([]byte(item), -1)
+			for _, n := range paramSubmatch {
+				//url := string(n[1])
+				buffer.Write(n[2])
+				buffer.Write(n[3])
+			}
+		}
+		log.Printf("\t--%s", buffer.String())
+
+	}
 }

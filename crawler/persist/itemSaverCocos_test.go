@@ -80,3 +80,7 @@ func TestGetCurrentPath(t *testing.T) {
 	}
 	log.Printf("%s", s)
 }
+
+func Test96(t *testing.T) {
+	log.Printf("%s", string(96))
+}

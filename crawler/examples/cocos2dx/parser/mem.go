@@ -48,9 +48,9 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 		//url := string(m[2])
 		//log.Printf("%s", right)
 		//对返回值和参数再次解析
-		paramSubmatch := returnRe.FindAllSubmatch(m[2], -1)
+		returnSubmatch := returnRe.FindAllSubmatch(m[2], -1)
 		var buffer bytes.Buffer
-		for _, n := range paramSubmatch {
+		for _, n := range returnSubmatch {
 			//url := string(n[1])
 			buffer.Write(n[1]) //返回值前缀如const等
 			buffer.Write(n[4]) //返回值名
@@ -65,7 +65,7 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 			if idx != 0 {
 				buffer.Write([]byte(","))
 			}
-			paramSubmatch = paramRe.FindAllSubmatch([]byte(item), -1)
+			paramSubmatch := paramRe.FindAllSubmatch([]byte(item), -1)
 			for _, n := range paramSubmatch {
 				//url := string(n[1])
 				buffer.Write(n[2])
