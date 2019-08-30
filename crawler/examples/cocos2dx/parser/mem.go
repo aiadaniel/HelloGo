@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var memRe3 = regexp.MustCompile(
+	`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">(<a class="anchor" id="[a-z0-9]+"></a>)([\S _]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9]+.html)#[a-z0-9]+">([\S]+)</a>([\S _]+)</td></tr>`)
 var memRe = regexp.MustCompile(
 					`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">(<a class="anchor" id="[a-z0-9]+"></a>[\s]+)*([\S _]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9]+.html)#[a-z0-9]+">([\S]+)</a>([\S _]+)</td></tr>`)
 var returnRe = regexp.MustCompile( //返回值
@@ -20,9 +22,11 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 	submatch := memRe.FindAllSubmatch(content, -1)
 	memCnt := 0
 	result := engine.ParseResult{}
-	//if len(submatch) == 0 {
-	//	panic("may be something err on url")
-	//}
+
+	if len(submatch) == 0 {
+		//	panic("may be something err on url")
+		submatch = memRe3.FindAllSubmatch(content, -1)
+	}
 	var members []string
 	for _, m := range submatch {
 		memitem := model.Memitem{}
