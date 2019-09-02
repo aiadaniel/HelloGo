@@ -11,7 +11,8 @@ import (
 
 var anchorRe = regexp.MustCompile(`<a class="anchor" id="[a-z0-9]+"></a>`)
 var memRe = regexp.MustCompile(
-					`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">([\S ]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9_]+.html)#[a-z0-9]+">([a-zA-Z0-9]+)</a>([\S _]+)</td></tr>`)
+	`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">([\S ]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1[a-zA-Z0-9_]+.html)#[a-z0-9]+">([a-zA-Z0-9]+)</a>([\S _]+)</td></tr>`)
+
 var returnRe = regexp.MustCompile( //返回值
 					`(a-zA-Z0-9 :&;)*(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9: _]+)</a>)*([a-zA-Z0-9 :&;*]*)`) //&#160;
 var paramRe = regexp.MustCompile( //参数

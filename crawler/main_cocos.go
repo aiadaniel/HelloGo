@@ -11,12 +11,13 @@ import (
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d7/df3/classcocos2d_1_1_director.html"
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d4/d5f/classcocos2d_1_1_scene.html"
 
-//const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d0/dc7/group____2d.html"
+const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d0/dc7/group____2d.html"
+
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/dd/df2/group__base.html"
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/da/d35/group____3d.html"
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/dd/d0d/group__actions.html"
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/d0/d2f/group__physics__2d.html"
-const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/dd/df1/group__ui.html"
+//const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/dd/df1/group__ui.html"
 
 // NOTE: 这种api爬虫的方式，有个问题就是api文档的更新较慢，有时跟代码对应不上，所以换本地文件爬虫的方式。
 func main() {
