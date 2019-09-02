@@ -3,10 +3,8 @@ package parser
 import (
 	"HelloGo/crawler/engine"
 	"HelloGo/crawler/examples/cocos2dx/model"
-	"HelloGo/crawler/persist"
 	"bytes"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 )
@@ -15,15 +13,14 @@ var anchorRe = regexp.MustCompile(`<a class="anchor" id="[a-z0-9]+"></a>`)
 var memRe = regexp.MustCompile(
 					`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">([\S ]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9_]+.html)#[a-z0-9]+">([a-zA-Z0-9]+)</a>([\S _]+)</td></tr>`)
 var returnRe = regexp.MustCompile( //返回值
-					`(a-zA-Z0-9 :&;)*(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 :&;*]*)`) //&#160;
+					`(a-zA-Z0-9 :&;)*(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9: _]+)</a>)*([a-zA-Z0-9 :&;*]*)`) //&#160;
 var paramRe = regexp.MustCompile( //参数
-	`(<a class="el" href="../../[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 :&;*=]*)`) //&#160;
+	`(<a class="el" href="../../[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*">([a-zA-Z0-9: _]+)</a>)*([a-zA-Z0-9 :&;*=]*)`) //&#160;
 // 具体类页面
 func ParseMemitem(content []byte, url string, packageName string, classname string, namespace string) engine.ParseResult {
-	if url == `https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/df/d7d/classcocos2d_1_1_animation_frame.html` {
-		log.Printf("11111")
-		persist.CreateFile(packageName, classname, string(content))
-	}
+	//if url == `https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/df/d7d/classcocos2d_1_1_animation_frame.html` {
+	//	persist.CreateFile(packageName, classname, string(content))
+	//}
 	all := anchorRe.ReplaceAll(content, []byte(""))
 
 	submatch := memRe.FindAllSubmatch(all, -1)
@@ -77,7 +74,6 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 				//url := string(n[1])
 				buffer.Write(n[2])
 				buffer.Write(n[3])
-				//TODO (<a class="el" href="../../dd/df2/group__base.html#ga7885f47644a0388f981f416fa20389b2">EventKeyboard::KeyCode</a> keyCode 匹配仍然有问题
 			}
 		}
 		memitem.MemitemRight = strings.Replace(buffer.String(), "&amp;", "&", -1)

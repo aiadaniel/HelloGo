@@ -54,7 +54,7 @@ func (e *ConcurrentEngine) Run(isLocal bool, seeds ...Request) {
 				continue
 			}
 			//var tempR = r
-			log.Printf("==r.Url: %s", r.Url)
+			//log.Printf("==r.Url: %s", r.Url)
 			e.Scheduler.Submit(r)
 		}
 	}

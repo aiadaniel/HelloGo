@@ -41,7 +41,7 @@ func ParseCocosPackage(content []byte, url1 string) engine.ParseResult {
 		}
 
 		var className = string(m[3])
-		log.Printf("==class: %s %s", className, string(m[2]))
+		//log.Printf("==class: %s %s", className, string(m[2]))
 		var url = baseurl + string(m[2])
 		result.Requests = append(result.Requests, engine.Request{
 			Url: url,
