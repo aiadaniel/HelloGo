@@ -68,7 +68,7 @@ func ItemSaverCocos(index string) (chan engine.Item, error) {
 				classes[k] = append(classes[k], memFunc)
 				//log.Printf("%s  %s",k,memFunc.MemitemCenter)
 				itemCnt++
-			case <-time.After(15 * time.Second): //目前先简单n秒超时(TODO 增加爬虫结束通知)
+			case <-time.After(20 * time.Second): //目前先简单n秒超时(TODO 增加爬虫结束通知)
 				GenerateFile(classes, includeprefix, h, cpp)
 				log.Printf("final get %d", len(classes))
 				break Loop

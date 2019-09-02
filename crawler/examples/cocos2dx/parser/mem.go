@@ -3,34 +3,37 @@ package parser
 import (
 	"HelloGo/crawler/engine"
 	"HelloGo/crawler/examples/cocos2dx/model"
+	"HelloGo/crawler/persist"
 	"bytes"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 )
 
-var memRe3 = regexp.MustCompile(
-	`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">(<a class="anchor" id="[a-z0-9]+"></a>)([\S _]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9]+.html)#[a-z0-9]+">([\S]+)</a>([\S _]+)</td></tr>`)
+var anchorRe = regexp.MustCompile(`<a class="anchor" id="[a-z0-9]+"></a>`)
 var memRe = regexp.MustCompile(
-					`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">(<a class="anchor" id="[a-z0-9]+"></a>[\s]+)*([\S _]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9]+.html)#[a-z0-9]+">([\S]+)</a>([\S _]+)</td></tr>`)
+					`<tr  name="cpp" class="memitem:[a-z0-9]+"><td class="memItemLeft" align="right" valign="top">([\S ]+)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/classcocos2d_1_1_[a-zA-Z0-9_]+.html)#[a-z0-9]+">([a-zA-Z0-9]+)</a>([\S _]+)</td></tr>`)
 var returnRe = regexp.MustCompile( //返回值
 					`(a-zA-Z0-9 :&;)*(<a class="el" href="../..(/[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*)">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 :&;*]*)`) //&#160;
 var paramRe = regexp.MustCompile( //参数
 	`(<a class="el" href="../../[a-z0-9]+/[a-z0-9]+/[a-zA-Z0-9_]+.html[#a-z0-9]*">([a-zA-Z0-9 _]+)</a>)*([a-zA-Z0-9 :&;*=]*)`) //&#160;
 // 具体类页面
 func ParseMemitem(content []byte, url string, packageName string, classname string, namespace string) engine.ParseResult {
-	submatch := memRe.FindAllSubmatch(content, -1)
+	if url == `https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/df/d7d/classcocos2d_1_1_animation_frame.html` {
+		log.Printf("11111")
+		persist.CreateFile(packageName, classname, string(content))
+	}
+	all := anchorRe.ReplaceAll(content, []byte(""))
+
+	submatch := memRe.FindAllSubmatch(all, -1)
 	memCnt := 0
 	result := engine.ParseResult{}
 
-	if len(submatch) == 0 {
-		//	panic("may be something err on url")
-		submatch = memRe3.FindAllSubmatch(content, -1)
-	}
 	var members []string
 	for _, m := range submatch {
 		memitem := model.Memitem{}
-		memitem.MemitemCenter = string(m[4])
+		memitem.MemitemCenter = string(m[3])
 		//构造、析构、重载函数冲突处理
 		if memitem.MemitemCenter == classname || memitem.MemitemCenter == "~"+classname {
 			continue
@@ -52,7 +55,7 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 		//url := string(m[2])
 		//log.Printf("%s", right)
 		//对返回值和参数再次解析
-		returnSubmatch := returnRe.FindAllSubmatch(m[2], -1)
+		returnSubmatch := returnRe.FindAllSubmatch(m[1], -1)
 		var buffer bytes.Buffer
 		for _, n := range returnSubmatch {
 			//url := string(n[1])
@@ -64,7 +67,7 @@ func ParseMemitem(content []byte, url string, packageName string, classname stri
 		memitem.MemitemLeft = strings.Replace(memitem.MemitemLeft, "&lt;", "<", -1)
 		memitem.MemitemLeft = strings.Replace(memitem.MemitemLeft, "&gt;", ">", -1)
 		buffer.Reset()
-		items := strings.Split(string(m[5]), ",")
+		items := strings.Split(string(m[4]), ",")
 		for idx, item := range items {
 			if idx != 0 {
 				buffer.Write([]byte(","))
