@@ -27,7 +27,6 @@ const seperator = string(os.PathSeparator)
 const methodArgs = `//// {LLL} {MMM}{RRR}
 PyObject* Py{XXX}_{MMM}(Py{XXX} *self{AAA})
 {
-    // @see py_Common.h
     // parse args here
 
     cocos2d::{XXX} *dr = dynamic_cast<cocos2d::{XXX}*>(self->ob_body);
