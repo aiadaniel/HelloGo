@@ -1,4 +1,4 @@
-package persist
+package cocos2dx
 
 import (
 	"log"

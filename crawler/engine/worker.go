@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"HelloGo/crawler/fetcher"
+	"HelloGo/crawler/engine/fetcher"
 	"fmt"
 	"time"
 )

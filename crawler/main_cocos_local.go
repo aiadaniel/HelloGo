@@ -2,9 +2,9 @@ package main
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/cocos2dx/parser"
-	"HelloGo/crawler/persist"
-	"HelloGo/crawler/scheduler"
+	"HelloGo/crawler/engine/scheduler"
+	"HelloGo/crawler/parsers/cocos2dx/parser"
+	"HelloGo/crawler/persist/cocos2dx"
 )
 
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/db/d59/classcocos2d_1_1_grid3_d.html"
@@ -15,10 +15,10 @@ import (
 const urllocal string = "F:\\c++space\\cocos2d-x-3.17.2"
 
 // 本地文件爬虫的方式。
-func main() {
+func main_2() {
 	//en := engine.SimpleEngine{}
 	//太快的请求触发爬虫网站的防御机制，导致403
-	itemChan, err := persist.ItemSaverCocosLocal("")
+	itemChan, err := cocos2dx.ItemSaverCocosLocal("")
 	if err != nil {
 		panic(err)
 	}

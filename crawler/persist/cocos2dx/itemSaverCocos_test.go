@@ -1,7 +1,7 @@
-package persist
+package cocos2dx
 
 import (
-	"HelloGo/crawler/examples/cocos2dx/model"
+	"HelloGo/crawler/parsers/cocos2dx/model"
 	"fmt"
 	"log"
 	"os"

@@ -2,9 +2,9 @@ package main
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/cocos2dx/parser"
-	"HelloGo/crawler/persist"
-	"HelloGo/crawler/scheduler"
+	"HelloGo/crawler/engine/scheduler"
+	"HelloGo/crawler/parsers/cocos2dx/parser"
+	"HelloGo/crawler/persist/cocos2dx"
 )
 
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/db/d59/classcocos2d_1_1_grid3_d.html"
@@ -21,10 +21,10 @@ const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/da/d35
 //const urlcocos string = "https://docs.cocos2d-x.org/api-ref/cplusplus/v3x/dd/d00/group__renderer.html"
 
 // NOTE: 这种api爬虫的方式，有个问题就是api文档的更新较慢，有时跟代码对应不上，所以换本地文件爬虫的方式。
-func main() {
+func main_1() {
 	//en := engine.SimpleEngine{}
 	//太快的请求触发爬虫网站的防御机制，导致403
-	itemChan, err := persist.ItemSaverCocos("")
+	itemChan, err := cocos2dx.ItemSaverCocos("")
 	if err != nil {
 		panic(err)
 	}

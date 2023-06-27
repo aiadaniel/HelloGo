@@ -1,9 +1,9 @@
-package persist
+package cocos2dx
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/cocos2dx/model"
-	"HelloGo/crawler/myutils"
+	"HelloGo/crawler/engine/myutils"
+	"HelloGo/crawler/parsers/cocos2dx/model"
 	"bufio"
 	"bytes"
 	"fmt"

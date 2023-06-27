@@ -2,7 +2,7 @@ package parser
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/zhenai/model"
+	"HelloGo/crawler/parsers/zhenai/model"
 	"regexp"
 	"strconv"
 	"strings"

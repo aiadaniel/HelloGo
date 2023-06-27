@@ -2,14 +2,14 @@ package main
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/zhenai/parser"
+	"HelloGo/crawler/engine/scheduler"
+	"HelloGo/crawler/parsers/zhenai/parser"
 	"HelloGo/crawler/persist"
-	"HelloGo/crawler/scheduler"
 )
 
 const urlzhenai string = "http://www.zhenai.com/zhenghun"
 
-func main() {
+func main_zhenai() {
 	//en := engine.SimpleEngine{}
 	//太快的请求触发爬虫网站的防御机制，导致403
 	itemChan, err := persist.ItemSaver("data_profile")

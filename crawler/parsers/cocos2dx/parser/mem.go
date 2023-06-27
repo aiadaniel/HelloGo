@@ -2,7 +2,7 @@ package parser
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/cocos2dx/model"
+	"HelloGo/crawler/parsers/cocos2dx/model"
 	"bytes"
 	"fmt"
 	"regexp"
