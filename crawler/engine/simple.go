@@ -7,7 +7,7 @@ import (
 type SimpleEngine struct {
 }
 
-func (e *SimpleEngine) Run(isLocal bool, seeds ...Request) {
+func (e *SimpleEngine) Run(isLocal bool, download bool, seeds ...Request) {
 	var requests []Request
 	for _, r := range seeds {
 		requests = append(requests, r)
@@ -17,7 +17,7 @@ func (e *SimpleEngine) Run(isLocal bool, seeds ...Request) {
 		r := requests[0]
 		requests = requests[1:]
 
-		result, err := Worker(r, isLocal)
+		result, err := Worker(r, isLocal, download)
 		if err != nil {
 			continue
 		}

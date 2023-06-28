@@ -2,7 +2,7 @@ package model
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/zhenai/model"
+	"HelloGo/crawler/parsers/zhenai/model"
 	"html/template"
 	"os"
 	"strconv"

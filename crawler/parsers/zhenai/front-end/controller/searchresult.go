@@ -2,15 +2,16 @@ package controller
 
 import (
 	"HelloGo/crawler/engine"
-	"HelloGo/crawler/examples/zhenai/front-end/model"
-	"HelloGo/crawler/examples/zhenai/front-end/view"
+	"HelloGo/crawler/parsers/zhenai/front-end/model"
+	"HelloGo/crawler/parsers/zhenai/front-end/view"
 	"context"
-	"gopkg.in/olivere/elastic.v5"
 	"net/http"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"gopkg.in/olivere/elastic.v5"
 )
 
 type SearchResultHandler struct {

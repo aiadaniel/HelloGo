@@ -28,7 +28,7 @@ func main_2() {
 		ItemChan:  itemChan,
 	}
 
-	en.Run(true, engine.Request{
+	en.Run(true, false, engine.Request{
 		Url:        urllocal,
 		ParserFunc: parser.ParseCocosPackageLocal,
 	})

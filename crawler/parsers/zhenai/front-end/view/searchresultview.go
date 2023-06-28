@@ -1,7 +1,7 @@
 package view
 
 import (
-	"HelloGo/crawler/examples/zhenai/front-end/model"
+	"HelloGo/crawler/parsers/zhenai/front-end/model"
 	"html/template"
 	"net/http"
 )

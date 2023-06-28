@@ -20,13 +20,13 @@ type ConcurrentEngine struct {
 }
 
 //isLocal 表示本地爬虫，文件夹
-func (e *ConcurrentEngine) Run(isLocal bool, seeds ...Request) {
+func (e *ConcurrentEngine) Run(isLocal bool, download bool, seeds ...Request) {
 
 	out := make(chan ParseResult)
 	e.Scheduler.Loop()
 
 	for i := 0; i < e.WorkerCnt; i++ {
-		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler, isLocal)
+		createWorker(e.Scheduler.WorkerChan(), out, e.Scheduler, isLocal, download)
 	}
 
 	for _, r := range seeds {
@@ -60,7 +60,7 @@ func (e *ConcurrentEngine) Run(isLocal bool, seeds ...Request) {
 	}
 }
 
-func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier, isLocal bool) {
+func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier, isLocal bool, download bool) {
 	go func() {
 		//in := make(chan Request)
 		for {
@@ -68,7 +68,7 @@ func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier, is
 			ready.WorkerReady(in)
 
 			r := <-in
-			result, err := Worker(r, isLocal)
+			result, err := Worker(r, isLocal, download)
 			if err != nil {
 				continue
 			}

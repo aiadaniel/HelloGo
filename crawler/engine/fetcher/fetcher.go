@@ -3,15 +3,17 @@ package fetcher
 import (
 	"bufio"
 	"fmt"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/encoding"
-	"golang.org/x/text/transform"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/transform"
 )
 
-func Fetch(url string) ([]byte, error) {
+// download表示是否下载文件
+func Fetch(url string, download bool) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -40,10 +42,15 @@ func Fetch(url string) ([]byte, error) {
 
 	//这里可能出现中文乱码，放到其他语言类似，需要做自动编码检测
 	bodyReader := bufio.NewReader(resp.Body)
-	encoding := determineEncoding(bodyReader)
-	//fmt.Println("determine encoding ", encoding)
-	utf8Reader := transform.NewReader(bodyReader, encoding.NewDecoder())
-	contents, err := ioutil.ReadAll(utf8Reader)
+	var contents []byte
+	if !download {
+		encoding := determineEncoding(bodyReader)
+		//fmt.Println("determine encoding ", encoding)
+		utf8Reader := transform.NewReader(bodyReader, encoding.NewDecoder())
+		contents, err = ioutil.ReadAll(utf8Reader)
+	} else {
+		contents, err = ioutil.ReadAll(bodyReader)
+	}
 	if err != nil {
 		panic(err)
 	}

@@ -33,7 +33,7 @@ func main_1() {
 		Scheduler: &scheduler.QueueScheduler{},
 		ItemChan:  itemChan,
 	}
-	en.Run(false, engine.Request{
+	en.Run(false, false, engine.Request{
 		Url:        urlcocos,
 		ParserFunc: parser.ParseCocosPackage,
 	})

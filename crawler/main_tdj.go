@@ -10,6 +10,7 @@ import (
 
 // 目前实现爬取天地劫官方网站的角色介绍图片，
 // 网址是规律的，即http://123.206.184.101/media/pictures/cn/tdj/img/new/hero/h1_peo.png 这个后缀按数字递增即可，所以不需要其他解析了，直接调度下载
+// http://media.zlongame.com/media/pictures/cn/tdj/img/new/hero/h77_peo.png
 const tdjpic_pre string = "http://123.206.184.101/media/pictures/cn/tdj/img/new/hero/h"
 const tdjpic_suf string = "_peo.png"
 
@@ -27,11 +28,11 @@ func main_tdj() {
 	}
 	var reqs []engine.Request
 	var i int
-	for i = 0; i < MaxPic; i++ {
+	for i = 1; i <= MaxPic; i++ {
 		reqs = append(reqs, engine.Request{
 			Url:        fmt.Sprintf("%s%d%s", tdjpic_pre, i, tdjpic_suf),
 			ParserFunc: tdj.ParsePic,
 		})
 	}
-	en.Run(false, reqs...)
+	en.Run(false, true, reqs...)
 }
